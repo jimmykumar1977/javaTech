@@ -1,0 +1,69 @@
+plugins {
+    id 'java'
+    id 'idea'
+}
+
+group 'org.example'
+version '1.0-SNAPSHOT'
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_1_10
+    targetCompatibility = JavaVersion.VERSION_1_10
+}
+repositories {
+    mavenCentral()
+}
+
+test {
+    useJUnitPlatform()
+
+    filter {
+        //include all integration tests
+        includeTestsMatching "*Test"
+    }
+
+    maxHeapSize = '1G'
+}
+
+
+
+sourceSets {
+    intTest {
+        compileClasspath += sourceSets.main.output
+        runtimeClasspath += sourceSets.main.output
+    }
+}
+
+configurations {
+    intTestImplementation.extendsFrom implementation
+    intTestRuntimeOnly.extendsFrom runtimeOnly
+}
+
+
+dependencies {
+    compileOnly 'org.projectlombok:lombok:1.18.8'
+    annotationProcessor 'org.projectlombok:lombok:1.18.8'
+
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.3.1'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.3.1'
+
+    intTestImplementation 'org.junit.jupiter:junit-jupiter-api:5.3.1'
+    intTestRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.3.1'
+}
+
+task integrationTest(type: Test) {
+    description = 'Runs integration tests.'
+    group = 'verification'
+
+    filter {
+        includeTestsMatching "*Test"
+        //include all integration tests
+        includeTestsMatching "*IT"
+    }
+
+    testClassesDirs = sourceSets.intTest.output.classesDirs
+    classpath = sourceSets.intTest.runtimeClasspath
+    shouldRunAfter test
+}
+
+check.dependsOn integrationTest
