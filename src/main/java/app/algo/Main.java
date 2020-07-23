@@ -17,7 +17,7 @@ public class Main {
        Map<String,Optional<Emp>> r =   empList.stream().collect(
                 Collectors.groupingBy(Emp::getDepartment,Collectors.maxBy(Comparator.comparing(Emp::getID))));
         Map<String,Integer> retVal = new HashMap<>();
-        r.forEach((k,v) -> retVal.put(k,v.get().getSalary()));
+        r.entrySet().stream().filter(entry -> entry.getValue().isPresent()).forEach(entry -> retVal.put(entry.getKey(),entry.getValue().get().getSalary()));
         return retVal;
     }
 
