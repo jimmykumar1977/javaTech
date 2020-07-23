@@ -6,7 +6,6 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.*;
 import java.util.function.Function;
-import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.io.*;
@@ -16,7 +15,7 @@ public class Main {
     public static Map<String,Integer> processData(ArrayList<String> array) {
        List<Emp> empList = array.stream().map(s->toEmp.apply(s)).collect(Collectors.toList());
        Map<String,Optional<Emp>> r =   empList.stream().collect(
-                Collectors.groupingBy(Emp::getDepartment,Collectors.maxBy((e1,e2)-> e1.getID().compareTo(e2.getID()))));
+                Collectors.groupingBy(Emp::getDepartment,Collectors.maxBy(Comparator.comparing(Emp::getID))));
         Map<String,Integer> retVal = new HashMap<>();
         r.forEach((k,v) -> retVal.put(k,v.get().getSalary()));
         return retVal;
@@ -24,12 +23,15 @@ public class Main {
 
     public static void main(String[] args) {
         String fileName = "input.txt";
-        System.out.println(processData(getfileContent(fileName)));
+        System.out.println(processData(getFileContent(fileName)));
     }
 
-    private static ArrayList<String> getfileContent(final String fileName) {
-        URL url = Main.class.getClassLoader().getResource(fileName);
+    private static ArrayList<String> getFileContent(final String fileName) {
         ArrayList<String> lines = new ArrayList<>(100);
+        URL url = Main.class.getClassLoader().getResource(fileName);
+        if (url == null){
+            return lines;
+        }
         try (Stream<String> stream = Files.lines(Paths.get(url.toURI()))) {
             stream.forEach(lines::add);
         } catch (IOException | URISyntaxException e) {
