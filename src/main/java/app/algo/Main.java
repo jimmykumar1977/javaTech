@@ -10,6 +10,9 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.io.*;
 
+/**
+ * 
+ */
 public class Main {
 
     public static Map<String,Integer> processData(ArrayList<String> array) {
